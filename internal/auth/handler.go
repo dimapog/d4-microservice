@@ -21,6 +21,17 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	}
 }
 
+// Login godoc
+// @Summary Login and obtain JWT
+// @Description Authenticate user credentials and return a JWT token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param credentials body auth.LoginRequest true "Login request"
+// @Success 200 {object} auth.LoginResponse
+// @Failure 400 {object} auth.ErrorResponse
+// @Failure 401 {object} auth.ErrorResponse
+// @Router /auth/login [post]
 func (h *Handler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

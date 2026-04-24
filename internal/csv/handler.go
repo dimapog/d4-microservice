@@ -21,6 +21,17 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	}
 }
 
+// UploadCSV godoc
+// @Summary Upload CSV for async import
+// @Description Upload a CSV file containing client rows for async batch import into the database
+// @Tags csv
+// @Accept multipart/form-data
+// @Produce json
+// @Param file formData file true "CSV file"
+// @Success 202 {object} csv.CSVUploadResponse
+// @Failure 400 {object} csv.ErrorResponse
+// @Failure 500 {object} csv.ErrorResponse
+// @Router /csv/upload [post]
 func (h *Handler) UploadCSV(c *gin.Context) {
 	fileHeader, err := c.FormFile("file")
 	if err != nil {

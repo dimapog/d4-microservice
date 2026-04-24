@@ -1,6 +1,17 @@
+// @title D4 Microservice API
+// @version 1.0
+// @description API for user management, authentication, calculator services, AI calls, and async CSV ingestion.
+// @BasePath /
+// @schemes http https
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 package main
 
 import (
+	"os"
+
+	docs "github.com/dimapog/jwt-microservice/docs"
 	"github.com/dimapog/jwt-microservice/internal/ai"
 	"github.com/dimapog/jwt-microservice/internal/auth"
 	"github.com/dimapog/jwt-microservice/internal/calculator"
@@ -9,16 +20,29 @@ import (
 	"github.com/dimapog/jwt-microservice/utils"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func init() {
 	utils.LoadEnvVariables()
 	utils.ConnectToDB()
 	utils.SyncDB()
+	if err := user.Migrate(); err != nil {
+		panic(err)
+	}
+	if err := csv.Migrate(); err != nil {
+		panic(err)
+	}
 }
 
 func main() {
+	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.Host = os.Getenv("HOST") + ":" + os.Getenv("PORT")
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+
 	router := gin.Default()
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Initialize user module
 	userRepo := user.NewRepository(utils.DB)

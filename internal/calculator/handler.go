@@ -24,6 +24,16 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	}
 }
 
+// CalculateBMI godoc
+// @Summary Calculate BMI for authenticated user
+// @Description Computes body mass index from the authenticated user's stored profile
+// @Tags calculator
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} calculator.BMIResponse
+// @Failure 401 {object} calculator.ErrorResponse
+// @Failure 400 {object} calculator.ErrorResponse
+// @Router /calculator/bmi [get]
 func (h *Handler) CalculateBMI(c *gin.Context) {
 	// Get authenticated user ID from context
 	userID, exists := c.Get("user_id")
@@ -43,6 +53,16 @@ func (h *Handler) CalculateBMI(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// CalculateHeartRateZones godoc
+// @Summary Calculate heart rate zones for authenticated user
+// @Description Computes heart rate training zones from the authenticated user's stored profile
+// @Tags calculator
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} calculator.HRZResponse
+// @Failure 401 {object} calculator.ErrorResponse
+// @Failure 400 {object} calculator.ErrorResponse
+// @Router /calculator/hrz [get]
 func (h *Handler) CalculateHeartRateZones(c *gin.Context) {
 	// Get authenticated user ID from context
 	userID, exists := c.Get("user_id")

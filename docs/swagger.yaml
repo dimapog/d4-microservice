@@ -1,0 +1,433 @@
+basePath: /
+definitions:
+  ai.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  ai.PersonalCalculationRequest:
+    properties:
+      age:
+        type: integer
+      gender:
+        type: string
+      height:
+        type: number
+      resting_heart_rate:
+        type: integer
+      units:
+        type: string
+      weight:
+        type: number
+    required:
+    - age
+    - gender
+    - height
+    - resting_heart_rate
+    - units
+    - weight
+    type: object
+  ai.PersonalCalculationResponse:
+    properties:
+      response: {}
+    type: object
+  auth.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  auth.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  calculator.BMIResponse:
+    properties:
+      bmi:
+        type: number
+      category:
+        type: string
+      height:
+        type: number
+      weight:
+        type: number
+    type: object
+  calculator.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  calculator.HRZResponse:
+    properties:
+      age:
+        type: integer
+      max_hr:
+        type: integer
+      zones:
+        items:
+          $ref: '#/definitions/calculator.Zone'
+        type: array
+    type: object
+  calculator.Zone:
+    properties:
+      max:
+        type: integer
+      min:
+        type: integer
+      name:
+        type: string
+    type: object
+  csv.CSVUploadResponse:
+    properties:
+      job_id:
+        type: string
+      status:
+        type: string
+    type: object
+  csv.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  user.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  user.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  user.UpdateUserRequest:
+    properties:
+      age:
+        type: integer
+      gender:
+        type: string
+      height:
+        type: number
+      resting_heart_rate:
+        type: integer
+      units:
+        type: string
+      weight:
+        type: number
+    type: object
+  user.UserResponse:
+    properties:
+      age:
+        type: integer
+      email:
+        type: string
+      gender:
+        type: string
+      height:
+        type: number
+      id:
+        type: integer
+      name:
+        type: string
+      resting_heart_rate:
+        type: integer
+      units:
+        type: string
+      weight:
+        type: number
+    type: object
+info:
+  contact: {}
+  description: API for user management, authentication, calculator services, AI calls,
+    and async CSV ingestion.
+  title: D4 Microservice API
+  version: "1.0"
+paths:
+  /ai/personal-calculation:
+    post:
+      consumes:
+      - application/json
+      description: Sends personal health data to the AI module and returns a calculated
+        response
+      parameters:
+      - description: AI calculation request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/ai.PersonalCalculationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ai.PersonalCalculationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ai.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ai.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ai.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get AI-powered health analysis
+      tags:
+      - ai
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user credentials and return a JWT token
+      parameters:
+      - description: Login request
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+      summary: Login and obtain JWT
+      tags:
+      - auth
+  /calculator/bmi:
+    get:
+      description: Computes body mass index from the authenticated user's stored profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/calculator.BMIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/calculator.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/calculator.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Calculate BMI for authenticated user
+      tags:
+      - calculator
+  /calculator/hrz:
+    get:
+      description: Computes heart rate training zones from the authenticated user's
+        stored profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/calculator.HRZResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/calculator.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/calculator.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Calculate heart rate zones for authenticated user
+      tags:
+      - calculator
+  /csv/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a CSV file containing client rows for async batch import
+        into the database
+      parameters:
+      - description: CSV file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/csv.CSVUploadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/csv.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/csv.ErrorResponse'
+      summary: Upload CSV for async import
+      tags:
+      - csv
+  /user/:
+    patch:
+      consumes:
+      - application/json
+      description: Update fields for the authenticated user
+      parameters:
+      - description: Update user request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update authenticated user
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with name, email, and password
+      parameters:
+      - description: Create user request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+      summary: Create a new user
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      description: Delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+      summary: Delete a user
+      tags:
+      - user
+    get:
+      description: Retrieve a user profile by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/user.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get user by ID
+      tags:
+      - user
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

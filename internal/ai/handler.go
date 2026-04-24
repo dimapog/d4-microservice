@@ -23,6 +23,19 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	}
 }
 
+// CalculatePersonalStatistics godoc
+// @Summary Get AI-powered health analysis
+// @Description Sends personal health data to the AI module and returns a calculated response
+// @Tags ai
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param data body ai.PersonalCalculationRequest true "AI calculation request"
+// @Success 200 {object} ai.PersonalCalculationResponse
+// @Failure 400 {object} ai.ErrorResponse
+// @Failure 401 {object} ai.ErrorResponse
+// @Failure 500 {object} ai.ErrorResponse
+// @Router /ai/personal-calculation [post]
 func (h *Handler) CalculatePersonalStatistics(c *gin.Context) {
 	var req PersonalCalculationRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

@@ -1,6 +1,8 @@
-# JWT Microservice
+# D4 Microservice
 
 A Go microservice built with Gin, GORM, SQLite, and OpenAI integration.
+Swagger documentation: github.com/swaggo/swag/cmd/swag@latest
+
 This project includes modular components for user management, authentication, AI-powered calculations, and high-load asynchronous CSV ingest.
 This project is a placeholder for real-life chalanges.
 
@@ -85,3 +87,8 @@ go run main.go
 ## Notes
 
 - Module-specific migrations are now handled inside each module via `init()`.
+
+
+## Swagger documentation
+
+swag init -g main.go -o docs
