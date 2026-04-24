@@ -3,3 +3,6 @@
 
 # DB
 database.db
+
+# Logs
+tmp/

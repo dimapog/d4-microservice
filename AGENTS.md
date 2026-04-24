@@ -60,6 +60,7 @@ To create a new module, follow this convention:
 Example:
 "Create module user"
 
+All migrations related to new module - should be located in module
 ---
 
 ### Expected Structure

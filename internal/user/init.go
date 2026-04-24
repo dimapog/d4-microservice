@@ -4,6 +4,12 @@ import (
 	"github.com/dimapog/jwt-microservice/utils"
 )
 
-func Migrate() {
-	utils.DB.AutoMigrate(&User{})
+func init() {
+	if err := Migrate(); err != nil {
+		panic(err)
+	}
+}
+
+func Migrate() error {
+	return utils.DB.AutoMigrate(&User{})
 }
